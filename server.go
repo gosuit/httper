@@ -2,13 +2,12 @@ package httper
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-
-	"github.com/gosuit/sl"
 )
 
 // Config is type for server setup.
@@ -19,12 +18,14 @@ type ServerCfg struct {
 	ShutdownTimeout time.Duration `yaml:"shutdownTimeout" env:"SERVER_SHUTDOWN_TIMEOUT" env-default:"5s"`
 }
 
+// Server represents an HTTP server with basic functionalities.
 type Server struct {
 	server          *http.Server
 	notify          chan error
 	shutdownTimeout time.Duration
 }
 
+// NewServer creates a new instance of Server with the given configuration and handler.
 func NewServer(cfg *ServerCfg, handler http.Handler) *Server {
 	httpServer := &http.Server{
 		Handler:      handler,
@@ -42,6 +43,7 @@ func NewServer(cfg *ServerCfg, handler http.Handler) *Server {
 	return s
 }
 
+// Start begins listening for incoming HTTP requests in a separate goroutine.
 func (s *Server) Start() {
 	go func() {
 		s.notify <- s.server.ListenAndServe()
@@ -49,11 +51,13 @@ func (s *Server) Start() {
 	}()
 }
 
+// Notify returns a read-only channel to receive notifications about server errors.
 func (s *Server) Notify() <-chan error {
 	return s.notify
 }
 
-func (s *Server) Shutdown(log sl.Logger) error {
+// Shutdown gracefully shuts down the server, waiting for ongoing requests to finish.
+func (s *Server) Shutdown(log *slog.Logger) error {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
 

@@ -9,30 +9,46 @@ import (
 	"net/http"
 )
 
+// Req represents an HTTP request with additional parameters and flags for unmarshalling.
 type Req struct {
 	params        *Params
 	NeedUnmarshal bool
 	*http.Request
 }
 
+// Params holds the configuration for creating an HTTP request, including method, URL, body, and marshaling options.
 type Params struct {
+	// HTTP method
 	Method method
-	Url    string
 
-	Body     interface{}
+	// URL for the request.
+	Url string
+
+	// Body of the request to be sent.
+	Body interface{}
+
+	// Predefined byte array for the body if not marshaling.
 	ByteBody []byte
 
-	Marshal     bool
+	// Flag indicating if the body should be marshaled.
+	Marshal bool
+
+	// Type of content for marshaling
 	MarshalType contentType
 
-	Unmarshal     bool
-	UnmarshalTo   interface{}
+	// Flag indicating if the response should be unmarshalled.
+	Unmarshal bool
+
+	// Destination for unmarshalling the response body.
+	UnmarshalTo interface{}
+
+	// Type of content for unmarshalling.
 	UnmarshalType contentType
 }
 
+// NewReq creates a new Req instance based on the provided Params. It marshals the body if required.
 func NewReq(params *Params) (*Req, error) {
 	var body []byte
-
 	var err error
 
 	if params.Marshal {
@@ -58,7 +74,7 @@ func NewReq(params *Params) (*Req, error) {
 	}, nil
 }
 
-func (r *Req) Unmarshal(body []byte) error {
+func (r *Req) unmarshal(body []byte) error {
 	switch r.params.UnmarshalType {
 
 	case JsonType:

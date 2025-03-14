@@ -6,6 +6,7 @@ import (
 )
 
 const (
+	// HTTP methods defined as constants for easy reference.
 	GetMethod     method = "GET"
 	PostMethod    method = "POST"
 	PutMethod     method = "PUT"
@@ -15,6 +16,7 @@ const (
 	TraceMethod   method = "TRACE"
 	ConnectMethod method = "CONNECT"
 
+	// Content types defined as constants for easy reference.
 	JsonType contentType = "application/json"
 	XmlType  contentType = "application/xml"
 	TextType contentType = "text/plain"
@@ -22,6 +24,8 @@ const (
 )
 
 const (
+	// HTTP status codes defined as constants for easy reference.
+
 	StatusContinue           = 100
 	StatusSwitchingProtocols = 101
 	StatusProcessing         = 102
@@ -95,26 +99,33 @@ type method string
 
 type contentType string
 
+// ServeMux is an alias for http.ServeMux, which is an HTTP request multiplexer.
 type ServeMux = http.ServeMux
 
+// DefaultClient is the default HTTP client.
 var DefaultClient = NewClient(&ClientCfg{Prefix: "", Timeout: 5 * time.Second})
 
+// Get performs a GET request to the specified URL with DefaultClient and returns the response.
 func Get(url string) (*Resp, error) {
 	return DefaultClient.Get(url)
 }
 
+// GetJson performs a GET request to the specified URL with DefaultClient and decodes the JSON response into the provided interface.
 func GetJson(url string, to interface{}) (*Resp, error) {
 	return DefaultClient.GetJson(url, to)
 }
 
-func PostWithJson(url string, data interface{}) (*Resp, error) {
-	return DefaultClient.PostWithJson(url, data)
+// Post performs a POST request with JSON data to the specified URL with DefaultClient and returns the response.
+func Post(url string, data interface{}) (*Resp, error) {
+	return DefaultClient.Post(url, data)
 }
 
-func PostWithJsonBind(url string, data interface{}, to interface{}) (*Resp, error) {
-	return DefaultClient.PostWithJsonBind(url, data, to)
+// PostJson performs a POST request with JSON data to the specified URL with DefaultClient and binds the response to the provided interface.
+func PostJson(url string, data interface{}, to interface{}) (*Resp, error) {
+	return DefaultClient.PostJson(url, data, to)
 }
 
+// Do executes a custom HTTP request with DefaultClient and returns the response.
 func Do(req *Req) (*Resp, error) {
 	return DefaultClient.Do(req)
 }

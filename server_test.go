@@ -1,12 +1,12 @@
 package httper
 
 import (
+	"log/slog"
 	"net/http"
 	"testing"
 	"time"
 
 	"github.com/gosuit/e"
-	"github.com/gosuit/sl"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -61,7 +61,7 @@ func TestServer_Shutdown(t *testing.T) {
 		server.notify <- e.New("some msg", e.Internal)
 	}()
 
-	mockLogger := sl.New(&sl.Config{Type: "discard"})
+	mockLogger := slog.Default()
 
 	err := server.Shutdown(mockLogger)
 
